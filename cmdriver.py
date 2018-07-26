@@ -16,8 +16,23 @@ chrome_driver = os.getcwd()+'/chromedriver';
 # go to transit website
 driver = webdriver.Chrome(chrome_options=chrome_options, executable_path=chrome_driver)
 driver.get("https://truetime.portauthority.org/bustime/eta/eta.jsp")
+
+#find stop number input box
+stpNumInput = driver.find_element_by_id("txtFindStopID")
+#enter stop number
+stpNumInput.send_keys("10958")
+
+#click the find button
 findStop_button = driver.find_element_by_css_selector("[id=findStop]")
+findStop_button = driver.find_element_by_id("findStop")
 findStop_button.click()
+
+#get the first bus data
+busNumber = driver.find_element_by_id("route1").text
+eta = driver.find_element_by_id("time1").text
+print('bus#',busNumber)
+print('eta#',eta)
+
 
 # capture the screen, name the file using current time
 filename = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
