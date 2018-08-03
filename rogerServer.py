@@ -39,7 +39,9 @@ def serve_combined():
     else:
         weather = getWeather(float(lat),float(lng))
         bus = scrape_bus_data(float(lat),float(lng))
-        return jsonify({'weather':weather,'bus':bus})
+        response = jsonify({'weather':weather,'bus':bus})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response
 
 @app.route('/roger/api/weather')
 def serve_weather_data():
@@ -62,9 +64,12 @@ def serve_bus_data():
         return jsonify({'bus_info': bus_info})
 
 '''Finds the nearest bus stop to the lat lng passed in and returns a dictioanry
-of atmost 5 buses arriving at the bus stop'''
+containing the nearest stop name and another dictionary of atmost 5 buses arriving
+at the bus stop'''
 def scrape_bus_data(lat,lng):
     cls_stop_code = closest_stop(lat,lng)
+    cls_stop_name = stops.loc[cls_stop_code]['stop_name']
+    print(cls_stop_name)
 
     '''Get the buses at this stop'''
     # chromedriver binary MUST be put in the same directory as this file
@@ -91,8 +96,11 @@ def scrape_bus_data(lat,lng):
     if busNumber != '' and eta != '':
         bus_data[busNumber] = eta
 
-    #return bus Data
-    return bus_data
+    #return bus and stop Data
+    data = {}
+    data['stp_name'] = cls_stop_name
+    data['bus_data'] = bus_data
+    return data
 
 '''Finds the closet stop to the given lat, lng'''
 def closest_stop(lat,lng):
@@ -130,69 +138,69 @@ def getWeather(lat,lng):
     weather['detailed_status'] = obs_weather.get_detailed_status()
     weather['weather_code'] = obs_weather.get_weather_code()
     weather['weather_icon_name'] = obs_weather.get_weather_icon_name()
-    weather['icon'] = weather_code_to_icon(weather['weather_code'])
+    weather['icon'] = 'http://openweathermap.org/img/w/'+weather['weather_icon_name']+'.png'
     weather['recommendation'] = getRecommendation(weather['weather_code'])
     return weather
 
-def weather_code_to_icon(code):
-    map = {
-    200 : '11d',
-    201 : '11d',
-    202 : '11d',
-    210 : '11d',
-    211 : '11d',
-    212 : '11d',
-    221 : '11d',
-    230 : '11d',
-    231 : '11d',
-    232 : '11d',
-    300	: '09d',
-    301	: '09d',
-    302	: '09d',
-    310	: '09d',
-    311	: '09d',
-    312	: '09d',
-    313	: '09d',
-    314	: '09d',
-    321 : '09d',
-    500	: '10d',
-    501	: '10d',
-    502	: '10d',
-    503	: '10d',
-    504	: '10d',
-    511	: '13d',
-    520	: '09d',
-    521	: '09d',
-    522	: '09d',
-    531	: '09d',
-    600	: '13d',
-    601	: '13d',
-    602	: '13d',
-    611	: '13d',
-    612	: '13d',
-    615	: '13d',
-    616	: '13d',
-    620	: '13d',
-    621	: '13d',
-    622	: '13d',
-    701	: '50d',
-    711	: '50d',
-    721	: '50d',
-    731	: '50d',
-    741	: '50d',
-    751	: '50d',
-    761	: '50d',
-    762	: '50d',
-    771	: '50d',
-    781	: '50d',
-    800	: '01d', #can be '01n' at night
-    801	: '02d',  #02n at night
-    802	: '03d',  #03n at night
-    803	: '04d',  #04n at night
-    804	: '04d',  #04n at night
-    }
-    img_base_url = 'http://openweathermap.org/img/w/'
-    return img_base_url + map.get(code) + '.png'
+# def weather_code_to_icon(code):
+#     map = {
+#     200 : '11d',
+#     201 : '11d',
+#     202 : '11d',
+#     210 : '11d',
+#     211 : '11d',
+#     212 : '11d',
+#     221 : '11d',
+#     230 : '11d',
+#     231 : '11d',
+#     232 : '11d',
+#     300	: '09d',
+#     301	: '09d',
+#     302	: '09d',
+#     310	: '09d',
+#     311	: '09d',
+#     312	: '09d',
+#     313	: '09d',
+#     314	: '09d',
+#     321 : '09d',
+#     500	: '10d',
+#     501	: '10d',
+#     502	: '10d',
+#     503	: '10d',
+#     504	: '10d',
+#     511	: '13d',
+#     520	: '09d',
+#     521	: '09d',
+#     522	: '09d',
+#     531	: '09d',
+#     600	: '13d',
+#     601	: '13d',
+#     602	: '13d',
+#     611	: '13d',
+#     612	: '13d',
+#     615	: '13d',
+#     616	: '13d',
+#     620	: '13d',
+#     621	: '13d',
+#     622	: '13d',
+#     701	: '50d',
+#     711	: '50d',
+#     721	: '50d',
+#     731	: '50d',
+#     741	: '50d',
+#     751	: '50d',
+#     761	: '50d',
+#     762	: '50d',
+#     771	: '50d',
+#     781	: '50d',
+#     800	: '01d', #can be '01n' at night
+#     801	: '02d',  #02n at night
+#     802	: '03d',  #03n at night
+#     803	: '04d',  #04n at night
+#     804	: '04d',  #04n at night
+#     }
+#     img_base_url = 'http://openweathermap.org/img/w/'
+#     return img_base_url + map.get(code) + '.png'
 
 '''Reads the stop info from stops.txt'''
 def getStopInfo():
