@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		$(document).ready(function() {
+		  $.post('https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyBf40jCGj9I-oSWAN8a7YvMcFtxJr3uMQs',
+		  	function(data, status){
+		  		if(status=='success'){
+		  			console.log('Geolocation successful');
+		  			console.log(data);
+		  			var lat = data.location.lat;
+		  			var lng = data.location.lng;
+		  			$.get('http://localhost:5000/roger/api/combined',{
+		  				lat : lat,
+		  				lng : lng
+		  			},
+		  			function(data, status){
+		  				console.log(data);
+		  				/*Set up ui*/
+		  				set_up(data);
+		  			});
+		  		}
+		  		else{
+		  			console.error('Geolocation failed!');
+		  		}
+		  	});
+		});
+		
+		function set_up(data){
+
+			var stp = "No stops near you!";
+			var recom = "All set!";
+			var weath_status = "Could not get weather around you!";
+			var icon =  "http://openweathermap.org/img/w/50n.png"; //default
+			var bus1 = "-";
+			var eta1 = "-"
+			var bus2 = "-";
+			var eta3 = "-"
+			var bus3 = "-";
+			var eta3 = "-"
+			var bus4 = "-";
+			var eta4 = "-"
+			var bus5 = "-";
+			var eta5 = "-"
+			
+			if( data && data.bus){
+				if(data.bus.stp_name){
+					stp = data.bus.stp_name;
+				}
+			}
+
+			if( data && data.weather){
+				if(data.weather.icon){
+					icon = data.weather.icon;
+					
+				}
+				if(data.weather.detailed_status){
+					weath_status = data.weather.detailed_status;
+				}
+				if(data.weather.recommendation){
+					recom = data.weather.recommendation;
+				}
+			}
+
+			$('#stp').text(stp);
+			$('#status').text(weath_status);
+			$('#wimage').attr("src", icon);
+			$('#recom').text(recom);
+			$('#b1').html('<h4>'+bus1+'</h4>');
+			$('#e1').html('<h4>'+eta1+'</h4>');
+			$('#b2').html('<h4>'+bus1+'</h4>');
+			$('#e2').html('<h4>'+eta1+'</h4>');
+			$('#b3').html('<h4>'+bus1+'</h4>');
+			$('#e3').html('<h4>'+eta1+'</h4>');
+			$('#b4').html('<h4>'+bus1+'</h4>');
+			$('#e4').html('<h4>'+eta1+'</h4>');
+			$('#b5').html('<h4>'+bus1+'</h4>');
+			$('#e5').html('<h4>'+eta1+'</h4>');
+		}
+	</script>
+	<div class="container">
+	  <h1>Roger!</h1>
+	  <h3>Weather augmented bus information.</h3>
+	  <br>
+      
+      
+      <div class="row"> 
+      	<div class="col-sm-4"><h4>Nearest stop:</h4></div>
+      	<div class="col-sm-4"><h4><label id="stp"></label></h4></div>
+      	<div class="col-sm-4"></div>
+      </div>
+      
+      <div class="row"> 
+      	<div class="col-sm-4">
+      		<h4>Weather status: </h4>
+      	</div>
+      	<div class="col-sm-4">
+      		<h4><label id="status"></label></h4>
+      	</div>
+      	<div class="col-sm-4">
+      		<img id="wimage" class="img-responsive" src="http://openweathermap.org/img/w/50n.png" alt="weather-icon">
+      	</div>
+      </div>
+      
+      <div class="row"> 
+      	<div class="col-sm-4"> 
+      		<h4>Recommendation: </h4>
+      	</div>
+      	<div class="col-sm-4">
+      		<h4><label id="recom"></label></h4>
+      	</div>
+      	<div class="col-sm-4"></div>
+      </div>
+
+	  <div class="row">
+	    <div id="b1" class="col-sm-6" style="background-color:lavender;"></div>
+	    <div id="e1" class="col-sm-6" style="background-color:lavenderblush;"></div>
+	  </div>
+	  <div class="row">
+	    <div id="b2" class="col-sm-6" style="background-color:lavenderblush;"></div>
+	    <div id="e2" class="col-sm-6" style="background-color:lavender;"></div>
+	  </div>
+	  <div class="row">
+	    <div id="b3" class="col-sm-6" style="background-color:lavender;"></div>
+	    <div id="e3" class="col-sm-6" style="background-color:lavenderblush;"></div>
+	  </div>
+	  <div class="row">
+	    <div id="b4" class="col-sm-6" style="background-color:lavenderblush;"></div>
+	    <div id="e4" class="col-sm-6" style="background-color:lavender;"></div>
+	  </div>
+	  <div class="row">
+	    <div id="b5" class="col-sm-6" style="background-color:lavender;"></div>
+	    <div id="e5" class="col-sm-6" style="background-color:lavenderblush;"></div>
+	  </div>
+	</div>
+</body>
+</html>

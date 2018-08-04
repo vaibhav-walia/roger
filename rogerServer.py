@@ -91,10 +91,13 @@ def scrape_bus_data(lat,lng):
 
     #get the first bus data
     bus_data = {}
-    busNumber = (driver.find_element_by_id("route1").text).strip()
-    eta = (driver.find_element_by_id("time1").text).strip()
-    if busNumber != '' and eta != '':
-        bus_data[busNumber] = eta
+    for i in range(1,6):
+        route = "route" + str(i)
+        eta = "time" + str(i)
+        busNumber = (driver.find_element_by_id(route).text).strip()
+        eta = (driver.find_element_by_id(eta).text).strip()
+        if busNumber != '' and eta != '':
+            bus_data[busNumber] = eta
 
     #return bus and stop Data
     data = {}
