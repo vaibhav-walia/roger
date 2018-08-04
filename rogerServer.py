@@ -202,9 +202,9 @@ def getRecommendation(code):
     771	: 'Avoid travel',
     781	: 'Avoid travel',
     800	: 'Sunglasses!',
-    801	: 'All set!',
-    802	: 'All set!',
-    803	: 'All set!',
+    801	: 'Get an umbrella!',
+    802	: 'Get an umbrella!',
+    803	: 'Get an umbrella!',
     804	: 'Get an umbrella!',
     }
     return map.get(code)
