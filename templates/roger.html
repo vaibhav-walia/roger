@@ -41,16 +41,6 @@
 			var recom = "All set!";
 			var weath_status = "Could not get weather around you!";
 			var icon =  "http://openweathermap.org/img/w/50n.png"; //default
-			var bus1 = "-";
-			var eta1 = "-"
-			var bus2 = "-";
-			var eta3 = "-"
-			var bus3 = "-";
-			var eta3 = "-"
-			var bus4 = "-";
-			var eta4 = "-"
-			var bus5 = "-";
-			var eta5 = "-"
 			
 			if( data && data.bus){
 				if(data.bus.stp_name){
@@ -71,20 +61,40 @@
 				}
 			}
 
+			fillBusInfo(data);
+
 			$('#stp').text(stp);
 			$('#status').text(weath_status);
 			$('#wimage').attr("src", icon);
 			$('#recom').text(recom);
-			$('#b1').html('<h4>'+bus1+'</h4>');
-			$('#e1').html('<h4>'+eta1+'</h4>');
-			$('#b2').html('<h4>'+bus1+'</h4>');
-			$('#e2').html('<h4>'+eta1+'</h4>');
-			$('#b3').html('<h4>'+bus1+'</h4>');
-			$('#e3').html('<h4>'+eta1+'</h4>');
-			$('#b4').html('<h4>'+bus1+'</h4>');
-			$('#e4').html('<h4>'+eta1+'</h4>');
-			$('#b5').html('<h4>'+bus1+'</h4>');
-			$('#e5').html('<h4>'+eta1+'</h4>');
+
+		}
+
+		function parseBusData(data){
+			var retval = {};
+			
+			if(!data || !data.bus || !data.bus.bus_data){
+				return retval;
+			}
+
+			for(var i=1; i<7; i++){
+				var bus = "-";
+				var eta = "-";
+				if(data.bus.bus_data[i]){
+					bus = data.bus.bus_data[i]['bus'];
+					eta = data.bus.bus_data[i]['eta'];
+				}
+				retval[i] = { 'bus' : bus, 'eta' : eta };
+			}
+			return retval;
+		}
+
+		function fillBusInfo(data){
+			var busdata = parseBusData(data);
+			for(var i=1; i<7; i++){
+				$('#b'+i).html('<h4>' + busdata[i]['bus']+'</h4>');
+			    $('#e'+i).html('<h4>' + busdata[i]['eta']+'</h4>');
+			}
 		}
 	</script>
 	<div class="container">
